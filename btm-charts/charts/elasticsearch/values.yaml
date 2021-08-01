@@ -1,0 +1,14 @@
+replicaCount: 1
+image:
+  repository: "docker.elastic.co/elasticsearch/elasticsearch-oss"
+  tag: "6.4.2"
+  pullPolicy: "IfNotPresent"
+
+storage : 5Gi
+container:
+  httpport: 9200
+  tcpport: 9300
+cluster_port:
+  http_port: 9200
+  tcp_port: 9300
+
