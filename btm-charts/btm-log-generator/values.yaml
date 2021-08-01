@@ -1,0 +1,6 @@
+appname: "loggenerator"
+container-name : "btm-log-generator"
+replicaCount: 1
+image:
+  repository: "sureshtripini/loggenerator:v5"
+

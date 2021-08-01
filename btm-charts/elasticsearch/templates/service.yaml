@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:  
+  labels:
+    service: {{ include "elasticsearch.fullname" . }}
+  name: {{ include "elasticsearch.fullname" . }}
+spec:  
+  type: ClusterIP  
+  ports:    
+    - port: {{ .Values.cluster_port.http_port }}
+      name: serving
+    - port: {{ .Values.cluster_port.tcp_port }}      
+      name: node-to-node
+  selector:    
+    service: {{ include "elasticsearch.fullname" . }}

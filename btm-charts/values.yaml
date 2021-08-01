@@ -1,0 +1,9 @@
+global:
+
+  elasticsearch:
+    host: btm-elasticsearch.service
+    port: 9200
+
+  logstash:
+    host: btm-logs-logstash.default.service
+    port: 5044

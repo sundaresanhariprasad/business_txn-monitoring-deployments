@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: {{ .Chart.Name }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    service: {{ include "elasticsearch.fullname" . }}
+  name: {{ include "elasticsearch.fullname" . }}
+spec:
+  serviceName: es
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      service: {{ include "elasticsearch.fullname" . }}
+  template:
+    metadata:
+      labels:
+        service: {{ include "elasticsearch.fullname" . }}
+    spec:
+      terminationGracePeriodSeconds: 300
+      initContainers:
+      - name: fix-the-volume-permission
+        image: busybox
+        command:
+        - sh
+        - -c
+        - chown -R 1000:1000 /usr/share/elasticsearch/data
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+      - name: increase-the-vm-max-map-count
+        image: busybox
+        command:
+        - sysctl
+        - -w
+        - vm.max_map_count=262144
+        securityContext:
+          privileged: true
+      - name: increase-the-ulimit
+        image: busybox
+        command:
+        - sh
+        - -c
+        - ulimit -n 65536
+        securityContext:
+          privileged: true
+      containers:
+      - name: {{ include "elasticsearch.fullname" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.container.httpport }}
+          name: http
+        - containerPort: {{ .Values.container.tcpport }}
+          name: tcp
+        resources:
+          requests:
+            memory: 1Gi
+          limits:
+            memory: 8Gi
+        env:
+          - name: cluster.name
+            value: {{ include "elasticsearch.fullname" . }}
+          - name: node.name
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: standard
+      resources:
+        requests:
+          storage: {{ .Values.storage }}
