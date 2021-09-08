@@ -4,19 +4,38 @@ metadata:
   name: loggeneratordeployment
   labels:
     app: loggenerator
-    env: test
 spec:
-  template:
-    metadata:
-      name: loggenerator
-      labels:
-        app: loggenerator
-        env: test
-    spec:
-      containers:
-        - name: loggenerator
-          image: sureshtripini/loggenerator:v5
+  replicas: 1
   selector:
     matchLabels:
       app: loggenerator
-  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: loggenerator
+    spec:
+      containers:
+        - name: loggenerator
+          image: hari/loggenerator:v5
+          imagePullPolicy: Always
+          env:
+            - name: MY_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          volumeMounts:
+            - name: log-path
+              mountPath: /var/log/dummyapp
+      volumes:
+        - name: log-path
+          hostPath:
+            path: /var/log/dummyapp
+
