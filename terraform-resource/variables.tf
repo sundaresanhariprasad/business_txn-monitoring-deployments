@@ -1,6 +1,6 @@
 variable "project" {
   description = "The Google Cloud Platform project ID to target."
-  default     = "hariprasad-sundaresan-308010"
+  default     = "lbgretailpocs"
 }
 
 variable "cluster_name" {

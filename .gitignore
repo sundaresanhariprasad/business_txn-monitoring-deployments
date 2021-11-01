@@ -3,3 +3,4 @@ terraform-resource/terraform.tfstate.backup
 terraform-resource/.terraform.lock.hcl
 terraform-resource/.terraform/*
 terraform-resource/crash.log
+keys

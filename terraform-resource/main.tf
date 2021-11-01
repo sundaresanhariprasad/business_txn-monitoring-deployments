@@ -9,13 +9,10 @@ terraform {
 provider "google" {
   project = "${var.project}"
   region  = "${var.primary_region}"
-  credentials = file("../../../keys/terraform-user-gcp.json")
+  # credentials = file("../keys/terraform-user-retail.json")
 }
 
-resource "google_service_account" "btm-gke-service-account" {
-  account_id   = "${var.gke-service-account}"
-  display_name = "${var.gke-service-account-display-name}" 
-}
+
 
 resource "google_container_cluster" "cluster" {
   description        = "Busines Transaction Monitoring"
@@ -28,7 +25,7 @@ resource "google_container_cluster" "cluster" {
   node_config {
     preemptible  = "${var.preemptible_vm}"
     machine_type = "${var.machine_type}"
-    service_account = google_service_account.btm-gke-service-account.email
+    
   }
 
   timeouts {
